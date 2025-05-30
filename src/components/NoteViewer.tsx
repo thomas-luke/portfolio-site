@@ -130,15 +130,24 @@ export function NoteViewer({ initialNote = 'about' }: NoteViewerProps) {
       // Build note index first
       await buildNoteIndex()
       
-      const noteData = await loadNote(initialNote)
+      // Ensure initialNote is always defined, defaulting to 'about'
+      const noteToLoad = initialNote || 'about';
+      const noteData = await loadNote(noteToLoad)
+
       if (noteData) {
         const firstTab: Tab = {
           id: generateTabId(),
           title: noteData.title,
-          noteId: initialNote
+          noteId: noteToLoad
         }
         setTabs([firstTab])
         setActiveTabId(firstTab.id)
+      } else {
+        // Fallback if the initial note fails to load
+        // This case should ideally not happen if 'about.md' exists
+        // and buildNoteIndex correctly populates the index.
+        console.error(`Failed to load initial note: ${noteToLoad}`);
+        // Optionally, set a default error state or try loading a known existing note
       }
       setLoading(false)
     }
@@ -151,7 +160,10 @@ export function NoteViewer({ initialNote = 'about' }: NoteViewerProps) {
   }
 
   const activeTab = tabs.find(tab => tab.id === activeTabId)
-  const activeNote = activeTab ? notes[activeTab.noteId] : null
+  // If there's only one tab, and it's the 'about' note, ensure it's considered active.
+  // Or, if activeTab is somehow not found but there's a tab, use the first one.
+  const currentTab = activeTab || (tabs.length > 0 ? tabs[0] : undefined);
+  const activeNote = currentTab ? notes[currentTab.noteId] : null
 
   return (
     <div className="note-container">
@@ -164,7 +176,7 @@ export function NoteViewer({ initialNote = 'about' }: NoteViewerProps) {
         <div className="note-content-container" onClick={handleLinkClick}>
         {activeNote ? (
           <NoteColumn
-            noteId={activeTab!.noteId}
+            noteId={currentTab!.noteId}
             note={activeNote}
             onClose={() => {}} // Not used in tab mode
             canClose={false} // Closing handled by tabs

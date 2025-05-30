@@ -1,8 +1,3 @@
 {
-  "about": "about.md",
-  "deployment": "deployment.md",
-  "projects": "projects.md",
-  "technical-details": "technical-details.md",
-  "thoughts": "thoughts.md",
-  "what-im-working-on": "what-im-working-on.md"
+  "about": "about.md"
 }
