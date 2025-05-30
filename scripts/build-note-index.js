@@ -15,8 +15,8 @@ function buildNoteIndex() {
   console.log('Available notes:')
   console.log(JSON.stringify(index, null, 2))
   
-  // Could write this to a JSON file for build-time optimization
-  const indexPath = path.join(__dirname, '../src/data/note-index.json')
+  // Write the index to public/data so it's available for dev and copied during build
+  const indexPath = path.join(__dirname, '../public/data/note-index.json') 
   fs.mkdirSync(path.dirname(indexPath), { recursive: true })
   fs.writeFileSync(indexPath, JSON.stringify(index, null, 2))
   
@@ -24,9 +24,11 @@ function buildNoteIndex() {
   
   // Copy .nojekyll file to out directory for GitHub Pages
   const nojekyllSource = path.join(__dirname, '../public/.nojekyll')
-  const nojekyllDest = path.join(__dirname, '../out/.nojekyll')
+  const nojekyllDestDir = path.join(__dirname, '../out')
+  const nojekyllDest = path.join(nojekyllDestDir, '.nojekyll')
   
   if (fs.existsSync(nojekyllSource)) {
+    fs.mkdirSync(nojekyllDestDir, { recursive: true }) // Ensure the 'out' directory exists
     fs.copyFileSync(nojekyllSource, nojekyllDest)
     console.log('.nojekyll file copied to out directory')
   }

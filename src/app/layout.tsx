@@ -1,6 +1,7 @@
 import './globals.css'
 import type { Metadata } from 'next'
 import { Merriweather, Source_Sans_3 } from 'next/font/google'
+import { PostHogProvider } from './providers'
 
 const merriweather = Merriweather({
   subsets: ['latin'],
@@ -30,7 +31,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={`${merriweather.variable} ${sourceSans.variable}`}>
-      <body className={sourceSans.className}>{children}</body>
+      <body className={sourceSans.className}>
+        <PostHogProvider>{children}</PostHogProvider>
+      </body>
     </html>
   )
 }

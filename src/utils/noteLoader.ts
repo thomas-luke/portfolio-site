@@ -19,15 +19,17 @@ function debounce<T extends (...args: any[]) => any>(
 
 // Build note index from available files
 export async function buildNoteIndex(): Promise<void> {
-  // In a real implementation, this would scan the notes directory
-  // For now, we'll manually define our available notes
-  noteIndex = {
-    'about': 'about.md',
-    'what-im-working-on': 'what-im-working-on.md',
-    'projects': 'projects.md',
-    'technical-details': 'technical-details.md',
-    'thoughts': 'thoughts.md',
-    'deployment': 'deployment.md'
+  try {
+    // Adjust the path to account for basePath
+    const response = await fetch('/portfolio-site/data/note-index.json');
+    if (!response.ok) {
+      throw new Error(`Failed to fetch note index: ${response.status} at /portfolio-site/data/note-index.json`);
+    }
+    noteIndex = await response.json();
+  } catch (error) {
+    console.error("Error loading note index:", error);
+    // Fallback to a minimal index if fetching fails
+    noteIndex = { 'about': 'about.md' };
   }
 
   // Preload note titles for search
@@ -38,7 +40,8 @@ export async function buildNoteIndex(): Promise<void> {
 async function preloadNoteTitles(): Promise<void> {
   const promises = Object.entries(noteIndex).map(async ([slug, filename]) => {
     try {
-      const response = await fetch(`/notes/${filename}`)
+      // Adjust the path here as well
+      const response = await fetch(`/portfolio-site/notes/${filename}`)
       if (response.ok) {
         const content = await response.text()
         const parsed = parseNote(content)
@@ -72,7 +75,8 @@ export async function loadNote(slug: string): Promise<NoteData | null> {
 
   try {
     // Load markdown file from public/notes
-    const response = await fetch(`/notes/${filename}`)
+    // Adjust the path here as well
+    const response = await fetch(`/portfolio-site/notes/${filename}`)
     if (!response.ok) {
       throw new Error(`Failed to load note: ${response.status}`)
     }

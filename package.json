@@ -1,8 +1,9 @@
 {
   "name": "portfolio-site",
   "version": "0.1.0",
-  "private": true,  "scripts": {
-    "dev": "next dev",
+  "private": true,
+  "scripts": {
+    "dev": "node scripts/build-note-index.js && next dev",
     "build": "next build && node scripts/build-note-index.js",
     "start": "next start",
     "lint": "next lint"
